@@ -1,0 +1,31 @@
+spring:
+  data:
+    mongodb:
+      database: jjjl
+      host: 47.241.171.38
+      port: 27017
+      password: root
+      username: root
+
+  redis:
+    host: 47.241.171.38
+    port: 6379
+    password: Xwcdmhsg0.
+    database: 0
+  datasource:
+    #连接池配置
+    tomcat:
+      max-idle: 10
+      max-wait: 10000
+      min-idle: 5
+      initial-size: 5
+      validation-query: select 1
+      test-on-borrow: false
+      test-while-idle: true
+      time-between-eviction-runs-millis: 18800
+    hikari:
+      max-lifetime: 500000
+  mvc:
+    view:
+      prefix: /
+      suffix: .jsp
