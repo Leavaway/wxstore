@@ -6,6 +6,13 @@ spring:
       port: 27017
       password: root
       username: root
+      option:
+        connect-timeout: 6000
+        max-connection-idle-time: 6000
+        max-connection-life-time: 6000
+        max-wait-time: 6000
+        socket-timeout: 0
+        server-selection-timeout: 6000
 
   redis:
     host: 47.241.171.38
@@ -29,3 +36,5 @@ spring:
     view:
       prefix: /
       suffix: .jsp
+
+

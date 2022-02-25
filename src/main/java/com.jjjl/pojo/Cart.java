@@ -7,21 +7,18 @@ import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
-import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Goods implements Serializable {
+public class Cart {
+
     @MongoId
     ObjectId _id;
 
-    double gid;
-    String title;
-    double price;
-    String category;
-    double inventory;
-    String detail;
-    List<String> photo;
+    ArrayList goods;
+    String phone;
+
 }

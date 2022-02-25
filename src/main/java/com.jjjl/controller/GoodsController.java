@@ -18,7 +18,7 @@ public class GoodsController {
 
     @GetMapping("detail")
     public String getDetail(@RequestParam("gid")int gid){
-        String test = goodsService.getGoodsDetailById(gid);
-        return test;
+        String goods = goodsService.getGoodsDetailById(gid);
+        return goods;
     }
 }
