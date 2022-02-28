@@ -21,4 +21,14 @@ public class GoodsController {
         String goods = goodsService.getGoodsDetailById(gid);
         return goods;
     }
+
+    @GetMapping("itemLists")
+    public String getLists(@RequestParam("category")String category){
+        return goodsService.getGoodsByCategory(category);
+    }
+
+    @GetMapping("allItems")
+    public String getAllItems(){
+        return goodsService.getAllItems();
+    }
 }

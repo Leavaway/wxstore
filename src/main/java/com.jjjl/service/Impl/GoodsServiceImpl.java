@@ -19,4 +19,16 @@ public class GoodsServiceImpl implements GoodsService {
         String goods = JSON.toJSONString(goodsDaoImpl.getGoodsDetailById(d)) ;
         return goods;
     }
+
+    @Override
+    public String getGoodsByCategory(String category) {
+        String goodsLists = JSON.toJSONString(goodsDaoImpl.getGoodsByCategory(category)) ;
+        return goodsLists;
+    }
+
+    @Override
+    public String getAllItems() {
+        String allItems = JSON.toJSONString(goodsDaoImpl.getAllItems());
+        return allItems;
+    }
 }
