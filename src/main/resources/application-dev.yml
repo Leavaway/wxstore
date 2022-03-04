@@ -2,9 +2,9 @@ spring:
   data:
     mongodb:
       database: jjjl
-      host: 47.241.171.38
+      host: 124.221.133.243
       port: 27017
-      password: root
+      password: zzy200013
       username: root
       option:
         connect-timeout: 6000
@@ -15,9 +15,9 @@ spring:
         server-selection-timeout: 6000
 
   redis:
-    host: 47.241.171.38
+    host: 124.221.133.243
     port: 6379
-    password: Xwcdmhsg0.
+    password: Xwcdmhsg0
     database: 0
   datasource:
     #连接池配置
