@@ -20,7 +20,12 @@ public class OrderDaoImpl implements OrderDao {
     @Override
     public List<Order> getALlOrders(String phone) {
         Query query=new Query(Criteria.where("phone").is(phone));
-        List<Order> ordersList= mongoTemplate.find(query,Order.class);
-        return ordersList;
+        return mongoTemplate.find(query,Order.class);
+    }
+
+    @Override
+    public List<Order> getOrdersByStatus(String phone, double orderStatus) {
+        Query query=new Query(Criteria.where("phone").is(phone).and("orderStatus").is(orderStatus));
+        return mongoTemplate.find(query,Order.class);
     }
 }

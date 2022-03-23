@@ -2,6 +2,7 @@ package com.jjjl.service.Impl;
 
 
 import com.alibaba.fastjson.JSON;
+import com.jjjl.dao.CartDao;
 import com.jjjl.dao.Impl.CartDaoImpl;
 import com.jjjl.pojo.Cart;
 import com.jjjl.service.CartService;
@@ -12,16 +13,15 @@ import org.springframework.stereotype.Service;
 public class CartServiceImpl implements CartService {
 
     @Autowired
-    CartDaoImpl cartDaoImpl;
+    CartDao cartDao;
 
     @Override
     public String getCart(String photo) {
-        String cart = JSON.toJSONString(cartDaoImpl.getCart(photo)) ;
-        return cart;
+        return JSON.toJSONString(cartDao.getCart(photo));
     }
 
     @Override
     public void setCart(Cart cart) {
-        cartDaoImpl.setCart(cart);
+        cartDao.setCart(cart);
     }
 }

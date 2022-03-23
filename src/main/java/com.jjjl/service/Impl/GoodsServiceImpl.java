@@ -11,24 +11,21 @@ import org.springframework.stereotype.Service;
 public class GoodsServiceImpl implements GoodsService {
 
     @Autowired
-    GoodsDaoImpl goodsDaoImpl;
+    GoodsDao goodsDao;
 
     @Override
     public String getGoodsDetailById(int gid) {
         Double d = (double) gid;
-        String goods = JSON.toJSONString(goodsDaoImpl.getGoodsDetailById(d)) ;
-        return goods;
+        return JSON.toJSONString(goodsDao.getGoodsDetailById(d));
     }
 
     @Override
     public String getGoodsByCategory(String category) {
-        String goodsLists = JSON.toJSONString(goodsDaoImpl.getGoodsByCategory(category)) ;
-        return goodsLists;
+        return JSON.toJSONString(goodsDao.getGoodsByCategory(category));
     }
 
     @Override
     public String getAllItems() {
-        String allItems = JSON.toJSONString(goodsDaoImpl.getAllItems());
-        return allItems;
+        return JSON.toJSONString(goodsDao.getAllItems());
     }
 }

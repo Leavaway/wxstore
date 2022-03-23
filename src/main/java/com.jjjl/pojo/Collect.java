@@ -7,18 +7,17 @@ import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
-import java.util.ArrayList;
-
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Cart {
+public class Collect {
 
     @MongoId
     ObjectId _id;
 
-    ArrayList goods;
     String phone;
+    List<CollectGoods> collectGoodsList;
 
 }

@@ -18,6 +18,14 @@ public class Order {
     String phone;
     String orderSerialNum;
     List<OrderGoods> orderDetails;
-    double orderPrice;
+    double orderTotalPrice;
+    double orderTotalNum;
+    String orderPhoto;
+    /* 设置订单状态码
+    *  1.0 代表所有订单
+    *  2.0 代表订单正在处理
+    *  3.0 代表订单存在纠纷
+    * */
+    double orderStatus;
 
 }

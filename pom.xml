@@ -86,7 +86,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.51</version>
+            <version>1.2.54.sec10</version>
         </dependency>
         <dependency>
             <groupId>org.xmlunit</groupId>
@@ -98,6 +98,14 @@
             <artifactId>wechatpay-apache-httpclient</artifactId>
             <version>0.4.2</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/commons-httpclient/commons-httpclient -->
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
+        </dependency>
+
     </dependencies>
 
     <build>

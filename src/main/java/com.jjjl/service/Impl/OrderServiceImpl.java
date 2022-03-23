@@ -3,6 +3,7 @@ package com.jjjl.service.Impl;
 
 import com.alibaba.fastjson.JSON;
 import com.jjjl.dao.Impl.OrderDaoImpl;
+import com.jjjl.dao.OrderDao;
 import com.jjjl.pojo.Order;
 import com.jjjl.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +15,17 @@ import java.util.List;
 public class OrderServiceImpl implements OrderService {
 
     @Autowired
-    OrderDaoImpl orderDaoImpl;
+    OrderDao orderDao;
 
     @Override
     public String getAllOrders(String phone) {
-        String allItems = JSON.toJSONString(orderDaoImpl.getALlOrders(phone));
-        return allItems;
+        return JSON.toJSONString(orderDao.getALlOrders(phone));
     }
+
+    @Override
+    public String getOrdersByStatus(String phone, int orderStatus) {
+        Double orderSta = (double) orderStatus;
+        return JSON.toJSONString(orderDao.getOrdersByStatus(phone,orderSta));
+    }
+
 }
