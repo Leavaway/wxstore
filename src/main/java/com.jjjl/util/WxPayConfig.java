@@ -16,6 +16,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -47,7 +48,7 @@ public class WxPayConfig {
                 new FileInputStream(filename));
     }
 
-    CloseableHttpClient getWxPayClient() throws IOException, HttpCodeException, GeneralSecurityException, NotFoundException {
+    public CloseableHttpClient getWxPayClient() throws IOException, HttpCodeException, GeneralSecurityException, NotFoundException {
         // 获取证书管理器实例
         CertificatesManager certificatesManager = CertificatesManager.getInstance();
 // 向证书管理器增加需要自动更新平台证书的商户信息
@@ -69,6 +70,8 @@ public class WxPayConfig {
 //        CloseableHttpResponse response = httpClient.execute(...);
         return httpClient;
     }
+
+
 
 
 }
