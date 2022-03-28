@@ -17,6 +17,8 @@ public class Order {
 
     String phone;
     String orderSerialNum;
+    String address;
+    String expressNumber;
     List<OrderGoods> orderDetails;
     double orderTotalPrice;
     double orderTotalNum;

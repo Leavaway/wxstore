@@ -11,4 +11,6 @@ public interface OrderDao {
     public List<Order> getALlOrders(String phone);
 
     public List<Order> getOrdersByStatus(String phone,double orderStatus);
+
+    public String createOrder(Order order);
 }

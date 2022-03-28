@@ -1,7 +1,11 @@
 package com.jjjl.util;
+import com.wechat.pay.contrib.apache.httpclient.util.PemUtil;
+import lombok.Data;
 import okhttp3.HttpUrl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
@@ -9,6 +13,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.util.Base64;
+
+
+
 public class WxSign {
 
 
@@ -17,31 +24,31 @@ public class WxSign {
 // POST - getToken("POST", httpurl, json)
     static String schema = "WECHATPAY2-SHA256-RSA2048";
 //    static HttpUrl httpurl = HttpUrl.parse(url);
-    @Autowired
-    WxPayConfig wxPayConfig;
+    static WxPayConfig wxPayConfig;
 
-    String getToken(String method, HttpUrl url, String body) throws UnsupportedEncodingException, NoSuchAlgorithmException, FileNotFoundException, SignatureException, InvalidKeyException {
-        String nonceStr = "your nonce string";
+    public String getToken(String method, HttpUrl url, String body) throws UnsupportedEncodingException, NoSuchAlgorithmException, FileNotFoundException, SignatureException, InvalidKeyException {
+        String nonceStr = OrderNoUtils.getRandomString(32);
         long timestamp = System.currentTimeMillis() / 1000;
         String message = buildMessage(method, url, timestamp, nonceStr, body);
         String signature = sign(message.getBytes("utf-8"));
 
-        return "mchid=\"" + wxPayConfig.getMchId() + "\","
+        return "mchid=\"" + "1623473870" + "\","
                 + "nonce_str=\"" + nonceStr + "\","
                 + "timestamp=\"" + timestamp + "\","
-                + "serial_no=\"" + wxPayConfig.getMchSerialNo() + "\","
+                + "serial_no=\"" + "139DA01850AF4599B290A69FB601D597F496AAE4" + "\","
                 + "signature=\"" + signature + "\"";
     }
 
-    String sign(byte[] message) throws SignatureException, FileNotFoundException, NoSuchAlgorithmException, InvalidKeyException {
+    public String sign(byte[] message) throws SignatureException, FileNotFoundException, NoSuchAlgorithmException, InvalidKeyException {
         Signature sign = Signature.getInstance("SHA256withRSA");
-        sign.initSign(wxPayConfig.getPrivateKey(wxPayConfig.getPrivateKeyPath()));
+        sign.initSign(PemUtil.loadPrivateKey(
+                new FileInputStream("apiclient_key.pem")));
         sign.update(message);
 
         return Base64.getEncoder().encodeToString(sign.sign());
     }
 
-    String buildMessage(String method, HttpUrl url, long timestamp, String nonceStr, String body) {
+    public String buildMessage(String method, HttpUrl url, long timestamp, String nonceStr, String body) {
         String canonicalUrl = url.encodedPath();
         if (url.encodedQuery() != null) {
             canonicalUrl += "?" + url.encodedQuery();

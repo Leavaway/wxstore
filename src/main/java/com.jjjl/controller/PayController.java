@@ -5,12 +5,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jjjl.pojo.OrderInfo;
-import com.jjjl.util.CreateSignature;
-import com.jjjl.util.HttpRequest;
-import com.jjjl.util.OrderNoUtils;
-import com.jjjl.util.WxPayConfig;
+import com.jjjl.util.*;
 import com.wechat.pay.contrib.apache.httpclient.exception.HttpCodeException;
 import com.wechat.pay.contrib.apache.httpclient.exception.NotFoundException;
+import okhttp3.HttpUrl;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
@@ -27,6 +25,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 import java.util.Date;
 
 @RestController
@@ -59,9 +60,10 @@ public class PayController {
     }
 
     @PostMapping("notify")
-    public void getNotify(HttpServletRequest httpServletRequest){
+    public String getNotify(HttpServletRequest httpServletRequest){
         System.out.println("---");
         System.out.println(httpServletRequest);
+        return "200";
     }
 
 
@@ -108,72 +110,50 @@ public class PayController {
         } finally {
             response.close();
         }
-        String prepayId = EntityUtils.toString(response.getEntity());
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(wxPayConfig.getAppid());
-        stringBuilder.append("\n");
-        Date date = new Date();
-        String timestamp = String.valueOf(date.getTime()/1000);
-        System.out.println("---");
-        stringBuilder.append(timestamp);
-        stringBuilder.append("\n");
-        String nonceStr = OrderNoUtils.getRandomString(32);
-        stringBuilder.append(nonceStr);
-        stringBuilder.append("\n");
-        stringBuilder.append("prepay_id=");
+        /**
+         * 生成paySign签名
+         */
+        WxPaySign wxPaySign = new WxPaySign();
         JSONObject jsonObject1 = JSONObject.parseObject(bodyAsString);
         String prepay_id = jsonObject1.getString("prepay_id");
-        stringBuilder.append(prepay_id);
-        stringBuilder.append("\n");
-        System.out.println(stringBuilder.toString());
-        byte[] bytes = CreateSignature.sign(wxPayConfig.getPrivateKey(wxPayConfig.getPrivateKeyPath()),stringBuilder.toString());
-        String paySign = CreateSignature.bytesToHexString(bytes);
+        String finalPrepay = "prepay_id="+prepay_id;
+        System.out.println("finalPrepay: "+finalPrepay);
+        Date date = new Date();
+        String timestamp = String.valueOf(date.getTime()/1000);
+        String nonceStr = OrderNoUtils.getRandomString(32);
+        String appid = wxPayConfig.getAppid();
+        String paySign = wxPaySign.getToken(appid,nonceStr,timestamp,finalPrepay);
+
 
         System.out.println("paySign:");
         System.out.println(paySign);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("timeStamp",timestamp);
         jsonObject.put("nonceStr",nonceStr);
-        jsonObject.put("package",prepay_id);
+        jsonObject.put("package",finalPrepay);
         jsonObject.put("signType","RSA");
         jsonObject.put("paySign",paySign);
+        jsonObject.put("orderNo",OrderNo);
         return JSONObject.toJSONString(jsonObject);
 
 
     }
 
     @GetMapping("find")
-    public String findOrder(@RequestParam("orderNo") String orderNo) throws IOException {
-        StringBuilder createSign = new StringBuilder();
-        createSign.append("GET");
-        createSign.append("\n");
-        String getUrl = "/v3/pay/transactions/out-trade-no/"+orderNo+"??mchid="+wxPayConfig.getMchId();
-        createSign.append(getUrl);
-        createSign.append("\n");
-        Date date = new Date();
-        String timestamp = String.valueOf(date.getTime()/1000);
-        createSign.append(timestamp);
-        createSign.append("\n");
-        String nonceStr = OrderNoUtils.getRandomString(32);
-        createSign.append(nonceStr);
-        createSign.append("\n");
-        createSign.append("\n");
-        byte[] bytes = CreateSignature.sign(wxPayConfig.getPrivateKey(wxPayConfig.getPrivateKeyPath()),createSign.toString());
-        String findSign = CreateSignature.bytesToHexString(bytes);
-        StringBuilder header = new StringBuilder();
-        header.append("WECHATPAY2-SHA256-RSA2048 mchid=\"");
-        header.append(wxPayConfig.getMchId());
-        header.append("\",nonce_str=\"");
-        header.append(nonceStr);
-        header.append("\",signature=\"");
-        header.append(findSign);
-        header.append("\",timestamp=\"");
-        header.append(timestamp);
-        header.append("\",serial_no=\"");
-        header.append(wxPayConfig.getMchSerialNo());
-        header.append("\"");
-        System.out.println("header:");
-        System.out.println(header.toString());
+    public String findOrder(@RequestParam("orderNo") String orderNo) throws IOException, NoSuchAlgorithmException, SignatureException, InvalidKeyException {
+
+
+
+        /**
+         * 使用微信给的方式构建加密header
+         */
+        WxSign wxSign = new WxSign();
+        String getUrl = "/v3/pay/transactions/out-trade-no/"+orderNo+"?mchid="+wxPayConfig.getMchId();
+        System.out.println("getUrl: "+getUrl);
+        HttpUrl httpurl = HttpUrl.parse("https://api.mch.weixin.qq.com"+getUrl);
+        System.out.println("httpurl: " + httpurl);
+        String token = "WECHATPAY2-SHA256-RSA2048 " + wxSign.getToken("GET",httpurl,"");
+        System.out.println("token: "+token);
 
         //create http request
         HttpClient httpClient = new HttpClient();
@@ -184,7 +164,7 @@ public class PayController {
         GetMethod getMethod = new GetMethod(url);
         // 设置post请求超时时间
         getMethod.getParams().setParameter(HttpMethodParams.SO_TIMEOUT, 60000);
-        getMethod.addRequestHeader("Authorization", header.toString());
+        getMethod.addRequestHeader("Authorization", token);
         getMethod.addRequestHeader("Accept", "text/html, application/xhtml+xml, image/jxr, */*");
         getMethod.addRequestHeader("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.10586");
         getMethod.addRequestHeader("Content-Type", "application/json");
@@ -193,6 +173,11 @@ public class PayController {
 
         String result = getMethod.getResponseBodyAsString();
         getMethod.releaseConnection();
+        System.out.println("result: "+result);
+        JSONObject object = JSON.parseObject(result);
+        if(object.getString("trade_state").equals("SUCCESS")){
+
+        }
         return result;
     }
 

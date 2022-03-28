@@ -28,4 +28,12 @@ public class OrderDaoImpl implements OrderDao {
         Query query=new Query(Criteria.where("phone").is(phone).and("orderStatus").is(orderStatus));
         return mongoTemplate.find(query,Order.class);
     }
+
+    @Override
+    public String createOrder(Order order) {
+
+        return null;
+    }
+
+
 }
